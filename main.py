@@ -8,8 +8,6 @@ f = open('C:/Users/Patri/Documents/test.csv', 'w', encoding='utf-8')
 #attributes
 fieldnames = ['index', 'id', 'nickname', 'desc','commentCount','playCount', 'shareCount']
 
-
-
 # create the csv writer
 writer = csv.DictWriter(f, fieldnames = fieldnames)
 writer.writeheader()
