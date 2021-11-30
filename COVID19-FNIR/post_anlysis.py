@@ -60,4 +60,44 @@ def gen_Sentiment( listt, dataframe ):
     return df3 
 
 # def comp_bigram(text, listBigr):
+
+def clean_single( desc ):
+    '''
+    input the raw description as a string
     
+    Returned: Clean description 
+    '''
+    import re
+    import func as fc2
+
+    def rep(m):
+        s=m.group(1)
+        return ' '.join(re.split(r'(?=[A-Z])', s))
+
+    text = re.sub(r'#(\w+)', rep, str(desc))
+    text = fc2.remove_newLT(text)
+    text = fc2.remove_Html(text)
+    text = fc2.remove_white_numb(text)
+    text = fc2.remove_doubles(text)
+    text = fc2.expand_contrt(text)
+    text = fc2.stopWords(text)
+    return text
+
+
+def gen_senti_onDesc( desc ):
+    
+    
+    clean = clean_single( desc )
+    from nltk.sentiment import SentimentIntensityAnalyzer
+    sia = SentimentIntensityAnalyzer() 
+    score = sia.polarity_scores(clean)
+    
+    return score
+
+def gen_senti_onUncleanDesc( desc ):
+    
+    from nltk.sentiment import SentimentIntensityAnalyzer
+    sia = SentimentIntensityAnalyzer() 
+    score = sia.polarity_scores(desc)
+    
+    return score
