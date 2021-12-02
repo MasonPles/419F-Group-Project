@@ -160,4 +160,20 @@ def combine_score( data ):
     data = data.drop('Desc', 1)
     merged = pd.merge(data, df2, left_index=True, right_index=True)
     return merged
+
+
+def gen_sentimentBoth( data ):
+    '''
+    This function will take in a dataframe and allow you to generate two sentiment lists, the first list will contain the sentiment score defined by a clean text string. While the second list will contain the scores associated with uncleaned text
+    
+    '''
+    liss = data['desc'].tolist()
+    #here liss is the list of descriptions from the CSV
+    cleaned = clean_single(liss[1])
+    #looking to see the difference in sentiment score between cleaning and not
+    #WE pass a single string cleaned into the analysis and we see that the cleaned text scores
+    #make more sense then the scores produced by the analysis using an uncleaned string
+    scrs1 = gen_senti_onDesc( cleaned)
+    scrs2 = gen_senti_onUncleanDesc( liss[1])
+    return (scrs1, scrs2)
                            
