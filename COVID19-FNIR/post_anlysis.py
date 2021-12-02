@@ -23,20 +23,6 @@ from nltk.corpus import stopwords
 from nltk import word_tokenize 
 import string 
 
-def genNgr(text, Ngram=1):
-    '''
-    This function will take in the cleaned text from each post and then produce the number of n-grams
-    specified in the second argument 
-    
-    Arguments: Text file (which you would like to find n-grams from)
-               Ngram: is the size of N 
-    
-    
-    '''
-    word = [word for word in text.split(" ") if word not in set(stopwords.words('english'))]
-    temp = zip(*[words[i:] for i in range(0,Ngram)])
-    ans =[' '.join(Ngram) for Ngram in temp]
-    return ans
 
 def gen_Sentiment( listt, dataframe ):
     '''
@@ -84,6 +70,16 @@ def clean_single( desc ):
     return text
 
 
+
+def ngrams1( sent, n):
+    
+    sent2 = clean_single( sent )
+    
+    token = [token for token in sent2.split(" ") if token != ""]
+    ngrams = zip(*[token[i:] for i in range(n)])
+    return [ ' '.join(ngrams) for ngrams in ngrams]
+
+
 def gen_senti_onDesc( desc ):
     
     
@@ -101,3 +97,67 @@ def gen_senti_onUncleanDesc( desc ):
     score = sia.polarity_scores(desc)
     
     return score
+
+
+def unigram_Score( desc ):
+    
+    
+    #open the file containing all the unigrams and create a set out of it
+    df = pd.read_csv("Data/unigram.csv")
+    listUni = set(df['0'].tolist())
+    
+    
+    #here we generate the possible unigrams for the description of the post
+    list_Post_uni = set(ngrams1(desc, 1))
+    
+    interSect = set.intersection(listUni, list_Post_uni)
+    set_sizeInter = len(interSect)
+    set_sizeB = len(list_Post_uni)
+    containment = set_sizeInter/set_sizeB
+    
+    return containment
+
+
+def bigram_Score( desc ):
+    
+    
+    #open the file containing all the unigrams and create a set out of it
+    df = pd.read_csv("Data/bigram.csv")
+    listbi = set(df['0'].tolist())
+    
+    
+    #here we generate the possible unigrams for the description of the post
+    list_Post_bi = set(ngrams1(desc, 2))
+    
+    
+    interSect = set.intersection(listbi, list_Post_bi)
+    set_sizeInter = len(interSect)
+    set_sizeB = len(list_Post_bi)
+    if set_sizeB <= 0:
+        return 0
+    else:
+        containment = set_sizeInter/set_sizeB
+    
+    return containment
+
+
+def combine_score( data ):
+    
+    inrange = data.index 
+    
+    df2 = pd.DataFrame(columns = ['Desc', 'Unigram_Score', 'Bigram_Score'])
+    
+    for e in range(len(data.index)):
+        
+        des = clean_single(str(data['Desc'][e]))
+        uniS = unigram_Score(str(data['Desc'][e]))
+        
+        biS = bigram_Score(str(data['Desc'][e]))
+        df2 = df2.append({'Desc':des, 'Unigram_Score': uniS, 'Bigram_Score': biS}, ignore_index=True)
+        
+                           
+    
+    data = data.drop('Desc', 1)
+    merged = pd.merge(data, df2, left_index=True, right_index=True)
+    return merged
+                           
