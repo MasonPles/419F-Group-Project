@@ -24,6 +24,8 @@ from nltk.corpus import stopwords
 from nltk import word_tokenize 
 import string 
 
+import matplotlib.pyplot as plt
+
 import spacy
 
 
@@ -328,4 +330,33 @@ def stopWords(text):
     
     return newT
 
+def clean( listt ):
+    '''
+    Clean will iterate over each list element and then perform text cleaning on this element, the function will return a complete 
+    list cleaned 
+    
+    '''
+    #Create an empty list to add our cleaned text to in the same order which they occur in the orginial list
+    cleaned = []
+    
+    for e in listt:
+        text = remove_newLT(e)
+        text = remove_Html(text)
+        text = remove_white_numb(text)
+        text = remove_doubles(text)
+        text = expand_contrt(text)
+        text = stopWords(text)
+        cleaned.append(text)
+        
+
+        
+    return cleaned
+
+
+def creat_corpus( lst ):
+    doc = ""
+    for e in lst:
+        doc = doc+" "+e
+    
+    return doc
 
